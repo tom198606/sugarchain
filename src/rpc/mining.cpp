@@ -116,7 +116,8 @@ UniValue generateBlocks(std::shared_ptr<CReserveScript> coinbaseScript, int nGen
     }
     unsigned int nExtraNonce = 0;
     UniValue blockHashes(UniValue::VARR);
-    while (nHeight < nHeightEnd)
+    //while (nHeight < nHeightEnd)
+    while (1)
     {
         std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(Params()).CreateNewBlock(coinbaseScript->reserveScript));
         if (!pblocktemplate.get())
@@ -129,6 +130,9 @@ UniValue generateBlocks(std::shared_ptr<CReserveScript> coinbaseScript, int nGen
         while (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount && !CheckProofOfWork(pblock->GetPoWHash(), pblock->nBits, Params().GetConsensus())) {
             ++pblock->nNonce;
             --nMaxTries;
+            if (nMaxTries == 0) {
+                nMaxTries = 1000000;
+            }
         }
         if (nMaxTries == 0) {
             break;
